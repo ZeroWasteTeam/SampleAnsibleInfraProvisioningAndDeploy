@@ -11,9 +11,10 @@ We will use the Azure **Cloud shell** to deploy our ansible playbook.
 Before we start creating the VM with Ansible we would require the public key created for authorization.
 
 Generate an SSH Key Pair (no password) and restrict permissions on it, run the below command on Cloud Shell:
-
 ```
 $ ssh-keygen -q -t rsa -b 2048 -N '' -f ~/.ssh/ansiblecontroller && chmod 400 ~/.ssh/ansiblecontroller
 ```
-
-
+Then we need to run the Ansible playbook (attached in the repo)
+```
+ansible-playbook azure_create_vm.yml
+```
