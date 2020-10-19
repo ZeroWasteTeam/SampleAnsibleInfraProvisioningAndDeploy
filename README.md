@@ -104,3 +104,51 @@ ansible -m ping all
 ```
 
 Once the above steps are completed you are all set to install docker and run application on your node using Ansible.
+
+## Install Docker
+```
+sudo apt-get install docker.io python3-docker -y
+```
+
+Once the installation is complete, start and enable the docker service with the commands:
+```
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+Finally, add your user to the docker group with the command:
+```
+sudo usermod -aG docker $USER
+```
+Log out and log back in so the changes will take effect.
+
+## How to create the directory structure and files
+On the Ansible server, create a new directory with the following command:
+```
+mkdir docker_project
+```
+Change into the docker_project directory with the command cd docker_project and create a hosts file with the command:
+```
+nano hosts
+```
+In that file, add the following contents:
+```
+[webserver]
+SERVER_IP
+
+[webserver:vars]
+ansible_python_interpreter=/usr/bin/python3
+```
+Where SERVER_IP is the IP address of the other server(s). Save and close the file.
+
+We're going to create a playbook that will do the following:
+
+1. Install aptitude
+2. Install a number of dependencies
+3. Add a docker repository
+4. Install docker-ce
+5. Install the docker Python module
+6. Pull the official Ubuntu image
+7. Create four containers based on the Ubuntu image 
+
+Issue the command nano ubuntu_playbook.yml.
+And that's it. You now know how to deploy a Docker container by way of an Ansible playbook.
