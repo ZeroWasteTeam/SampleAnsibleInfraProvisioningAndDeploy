@@ -18,3 +18,89 @@ Then we need to run the Ansible playbook (attached in the repo)
 ```
 ansible-playbook azure_create_vm.yml
 ```
+Kindly note the public IP address which will be the output of the above script **"The public IP is <ip_address>."**
+
+Once the resources are created on Aruze, connect to the VM using the below command through the Cloud Shell
+
+```
+ssh -i ~/.ssh/ansiblecontroller.pub azureuser@<ip_address>
+```
+Type yes and hit enter to accept.
+
+Node which we just created we will call it **Server**. 
+
+In order to demonstrate the reals essence of Ansible( Deployment) we need atleast one more node to run our experiments
+
+So please go ahead and rerun the same **azure_create_vm.yml** playbook, ofcourse you need to update the entries like VM name etc. Ensure to copy the IP address of the same.
+
+
+On the Controller:
+To update and upgrade, log into the server to host Ansible and issue the following commands:
+```
+sudo apt-get update
+sudo apt-get upgrade -y
+```
+Once that process completes, reboot the server (if necessary). You're now ready to install.
+
+## Installing Ansible
+Next, install Ansible. Here are the steps to make that happen:
+
+1. Log into the Ubuntu Server that will host Ansible
+2. Install the necessary repository with the command sudo apt-add-repository ppa:ansible/ansible.
+3. Update apt with the command sudo apt-get update.
+4. Install Ansible with the command sudo apt-get install ansible -y.
+5. Because Ansible requires a Python interpreter (in order to run its modules), we need to install Python as well. For that, issue the command:
+
+```
+sudo apt-get install python -y
+```
+**Note**: You may find Python already installed.
+
+At this point, Ansible is installed and ready to go.
+
+## Configure SSH access to the server
+Next, we need to make it possible for our node to access the Ansible server. We do this via Secure Shell (SSH). Copy the server's SSH public key to the node. If your server doesn't have a key yet, generate one with the command:
+```
+ssh-keygen
+```
+Display the contents of the public SSH key with the command:
+
+cat ~/.ssh/id_rsa.pub
+Here's what you do with the output of that command:
+
+1. Copy the text from the key.
+2. Log into your node server.
+3. Issue the command sudo -s.
+4. Open the authorized_keys file with the command sudo nano ~/.ssh/authorized_keys.
+5. Paste the contents of the server key at the bottom of this file.
+6. Save and close the file.
+If you want to simplify this process, issue the command (from the Ansible server):
+```
+ssh-copy-id NODE_IP
+```
+Where NODE_IP is the IP Address of the node to be added.
+
+To test the newly added key, go back to your Ansible server and SSH to the node machine. Complete this for all of the nodes you want connected to Ansible.
+
+
+## Setting up our node
+Next, make sure Ansible knows the location of our node. Issue the command:
+```
+sudo nano /etc/ansible/hosts
+```
+In that file, create a new group for your nodes (in our case, we've only connected one node) and associate the IP addresses like so:
+
+[group_name]
+ALIAS NODE_IP
+Where group_name is the name of the group to be created, ALIAS is an alias for the node, and NODE_IP is the IP address of your node. If you have more than one node, list them like so:
+
+[webservers]
+WEB1 192.168.1.100
+WEB2 192.168.1.101
+WEB3 192.168.1.102
+Save and close that file. You can now test this by pinging all of your added nodes with the command:
+```
+ansible -m ping all
+```
+
+Once the above steps are completed you are all set to install docker and run application on your node using Ansible.
